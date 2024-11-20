@@ -29,6 +29,9 @@ account_info = {}
 def uuidv4():
     return str(uuid.uuid4())
 
+def uuidv3(proxy):
+    return str(uuid.uuid3(uuid.NAMESPACE_DNS, proxy or ""))
+
 def valid_resp(resp):
     if not resp or "code" not in resp or resp["code"] < 0:
         raise ValueError("Invalid response")
@@ -98,8 +101,9 @@ async def ping(proxy):
     try:
         data = {
             "id": account_info.get("uid"),
-            "browser_id": browser_id,
-            "timestamp": int(time.time())
+            "browser_id": uuidv3(proxy),
+            "timestamp": int(time.time()),
+            'version': '2.2.7'
         }
 
         response = call_api(DOMAIN_API["PING"], data, proxy)
